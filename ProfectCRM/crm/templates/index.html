@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block body %}
+    
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-3 col-md-2 sidebar">
+                <ul class="nav nav-sidebar">
+                    {% for i in request.user.userprofile.roles.all %}
+                        {% for j in i.menu.all %}
+                        <li>
+                            <a href="{% url j.url_name %}">{{ j }}</a>
+                        </li>
+                        {% endfor %}
+                    {% endfor%}
+                </ul>
+            </div>
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                {% block body_content %}
+                
+                {% endblock body_content %}
+            </div>
+        </div>
+    </div>
+    
+{% endblock body %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block body %}
+{% load tags %}
+    <div class="container">
+    {% for i, y in display_list.items %}
+            <div class="panel panel-primary" style="margin: 20px;">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{{ i }}</h3>
+                </div>
+                <div class="panel-body">
+                     
+                    <table class="table table-hover">
+                       <tbody>
+                            {% for j, z in y.items %}
+                            <tr>
+                                <td><a href="{% url 'display_tables' i j%}">{% render_app_name z %}</a></td>
+                                <td>增加</td>
+                                <td>删除</td>
+                            </tr>
+                            {% endfor %}
+                       </tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+    {% endfor %}
+
+{% endblock body %}

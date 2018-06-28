@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block body %}
+{% load tags %}
+    <div class="panel panel-info" style="margin: 20px;">
+        <div class="panel-heading">
+            <h3 class="panel-title">{% get_model_name admin_class%}
+                <a href="{{ request.path}}add" class="pull-right">增加</a>
+            </h3>    
+        </div> 
+        <div class="panel-body">
+            <div class="row">
+                <form method="get">
+                    {% for fil in filters%}
+                        {% render_filter_ele fil %}
+                    {% endfor %}
+                    <button type="submit" class="btn btn-success">检索</button>
+                    <div class="row">
+                        <div class="col-lg-5" style="margin:15px;">
+                            <input type="text" name="q" value="{{ previous_search }}"class="form-control" placeholder="search by {% for search_field in admin_class.search_fields %}{{ search_field }}/{% endfor%}">
+                        </div>
+                        <div class="col-lg-2" style="margin-top:15px;">
+                            <button type="submit" class="btn btn-success">搜索</button>
+                        </div>
+                    </div>
+                  
+                </form>
+            </div>
+            <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            {% for column in admin_class.list_display %}
+                                {% build_table_header_column column orderby_key filter_contions %}
+                            {% endfor%}  
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for obj in query_sets %}
+                            <tr>
+                                {% build_table_row request obj admin_class %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+            </table>
+            总共{{ query_sets.paginator.count }}条记录
+            <div>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                    {% if query_sets.has_previous %}
+                    <li>
+                        <a href="?page={{ query_sets.previous_page_number}}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% build_painators query_sets filter_contions previous_orderby previous_search %}
+                    {% if query_sets.has_next %}
+                        <li><a href="?page={{ query_sets.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a></li>
+                    {% endif %}
+                    </ul>
+                </nav>
+                {% comment %} <span>{{ query_sets.number }} of {{ query_sets.paginator.num_pages }}</span> {% endcomment %}
+            </div>
+        </div>
+    </div>
+{% endblock body %}

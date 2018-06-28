@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load tags %}
+{% block css-resources %} 
+    <style>
+        .filter-select{
+            width: 100%;
+            height: 250px!important;
+        }
+    </style>
+{% endblock css-resources %}
+{% block body %}
+{% if form.errors %}
+    <div class="alert alert-danger" role="alert">{{ form.errors }}</div>
+{% endif %}
+<form class="form-horizontal" method="POST" onsubmit="return SeleAllChoseData()">{% csrf_token %}
+    {% for field in form %}
+    <div class="form-group">
+        <label class="col-sm-2 control-label" style="font-weight:normal">
+            {% if field.field.required %}
+                <b>{{ field.label}}</b>
+            {% else %}
+                {{ field.label}}
+            {% endif %}
+        </label>
+        <div class="col-sm-10">
+            {% if field.name in admin_class.filter_horizontal %}
+                <div class="col-sm-3">
+                {% get_m2m_obj_list admin_class field form as m2m_obj_list %}
+                <select id='id_{{ field.name }}_from' class="filter-select" multiple>
+                    {% for obj in m2m_obj_list %}
+                        <option ondblclick="MoveElementTo(this, 'id_{{ field.name }}_to')" value="{{ obj.id }}">{{ obj }}</option>
+                    {% endfor %}
+                </select>
+                </div>
+                <div class="col-sm-1"></div>
+                <div class="col-sm-3">
+                    {% get_m2m_selected_list form field as selcted_obj_list %}
+                    <select tag="chosen_list" id="id_{{ field.name }}_to" class='filter-select' name="{{ field.name }}" multiple>
+                        {% for obj in selcted_obj_list %}
+                        <option ondblclick="MoveElementTo(this, 'id_{{ field.name }}_from')" value="{{ obj.id }}">{{ obj }}</option>
+                        {% endfor%}
+                    </select>
+                </div>
+            {% else %}
+                <p class="form-control-static">{{ field }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+    <div class="from_group">
+        <button type="submit" class="btn btn-success">Submit</button>
+    </div>
+</form>
+
+<script>
+    function MoveElementTo(ele, target_id){
+        var e = "<option ondblclick=MoveElementTo(this,'"+ $(ele).parent().attr('id')+"') value='"+ $(ele).val() +"'>" + ele.text +"</option>"
+            $("#"+target_id).append(e);
+        ele.remove();
+    }
+    function SeleAllChoseData(){
+        $("select[tag='chosen_list'] option").each(function () {
+            $(this).prop("selected", true);
+        })
+        return true;
+    }
+</script>
+{% endblock body %}
